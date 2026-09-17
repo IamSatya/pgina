@@ -29,6 +29,21 @@ jobs:
       run: |
         msbuild pGinaBuild.msbuild.xml /p:Configuration=Release /m /v:minimal
 
+    - name: Install Inno Setup
+      run: |
+        choco install innosetup --no-progress -y
+
+    - name: Build Windows Installer (.exe)
+      run: |
+        & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer\installer.iss
+
+    - name: Upload Windows Installer (.exe)
+      uses: actions/upload-artifact@v4
+      with:
+        name: pGinaSetup-Installer
+        path: Installer/Output/pGinaSetup-*.exe
+        if-no-files-found: error
+
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
