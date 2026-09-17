@@ -614,7 +614,7 @@ namespace pGina
 						//	field is not set any longer (set it to empty string)
 						if(m_logonUiCallback && updateUi)
 						{
-							m_logonUiCallback->SetFieldString(this, m_fields->fields[x].fieldDescriptor.dwFieldID, L"");
+							m_logonUiCallback->SetFieldString(AsCred(), m_fields->fields[x].fieldDescriptor.dwFieldID, L"");
 						}
 					}
 				}
@@ -683,24 +683,24 @@ namespace pGina
 
 					m_fields->fields[m_fields->statusFieldIdx].fieldStatePair.fieldState = CPFS_HIDDEN;
 					if (m_logonUiCallback)
-						m_logonUiCallback->SetFieldState(this, m_fields->statusFieldIdx, CPFS_HIDDEN);
+						m_logonUiCallback->SetFieldState(AsCred(), m_fields->statusFieldIdx, CPFS_HIDDEN);
 
 					if (!hideUsername) {
 						m_fields->fields[m_fields->usernameFieldIdx].fieldStatePair.fieldState = CPFS_DISPLAY_IN_SELECTED_TILE;
 						if(m_logonUiCallback)
-							m_logonUiCallback->SetFieldState(this, m_fields->usernameFieldIdx, CPFS_DISPLAY_IN_SELECTED_TILE);
+							m_logonUiCallback->SetFieldState(AsCred(), m_fields->usernameFieldIdx, CPFS_DISPLAY_IN_SELECTED_TILE);
 					}
 					if (!hidePassword) {
 						m_fields->fields[m_fields->passwordFieldIdx].fieldStatePair.fieldState = CPFS_DISPLAY_IN_SELECTED_TILE;
 						if (m_logonUiCallback )
-							m_logonUiCallback->SetFieldState(this, m_fields->passwordFieldIdx, CPFS_DISPLAY_IN_SELECTED_TILE);
+							m_logonUiCallback->SetFieldState(AsCred(), m_fields->passwordFieldIdx, CPFS_DISPLAY_IN_SELECTED_TILE);
 						// In change password scenario, also show new password and repeat new password fields
 						if (CPUS_CHANGE_PASSWORD == m_usageScenario) {
 							m_fields->fields[CredProv::CPUIFI_NEW_PASSWORD].fieldStatePair.fieldState = CPFS_DISPLAY_IN_SELECTED_TILE;
 							m_fields->fields[CredProv::CPUIFI_CONFIRM_NEW_PASSWORD].fieldStatePair.fieldState = CPFS_DISPLAY_IN_SELECTED_TILE;
 							if (m_logonUiCallback) {
-								m_logonUiCallback->SetFieldState(this, CredProv::CPUIFI_NEW_PASSWORD, CPFS_DISPLAY_IN_SELECTED_TILE);
-								m_logonUiCallback->SetFieldState(this, CredProv::CPUIFI_CONFIRM_NEW_PASSWORD, CPFS_DISPLAY_IN_SELECTED_TILE);
+								m_logonUiCallback->SetFieldState(AsCred(), CredProv::CPUIFI_NEW_PASSWORD, CPFS_DISPLAY_IN_SELECTED_TILE);
+								m_logonUiCallback->SetFieldState(AsCred(), CredProv::CPUIFI_CONFIRM_NEW_PASSWORD, CPFS_DISPLAY_IN_SELECTED_TILE);
 							}
 						}
 					}
@@ -711,17 +711,17 @@ namespace pGina
 					m_fields->fields[m_fields->usernameFieldIdx].fieldStatePair.fieldState = CPFS_HIDDEN;
 					m_fields->fields[m_fields->passwordFieldIdx].fieldStatePair.fieldState = CPFS_HIDDEN;
 					if (m_logonUiCallback) {
-						m_logonUiCallback->SetFieldState(this, m_fields->statusFieldIdx, CPFS_DISPLAY_IN_BOTH);
-						m_logonUiCallback->SetFieldState(this, m_fields->usernameFieldIdx, CPFS_HIDDEN);
-						m_logonUiCallback->SetFieldState(this, m_fields->passwordFieldIdx, CPFS_HIDDEN);
+						m_logonUiCallback->SetFieldState(AsCred(), m_fields->statusFieldIdx, CPFS_DISPLAY_IN_BOTH);
+						m_logonUiCallback->SetFieldState(AsCred(), m_fields->usernameFieldIdx, CPFS_HIDDEN);
+						m_logonUiCallback->SetFieldState(AsCred(), m_fields->passwordFieldIdx, CPFS_HIDDEN);
 					}
 					// In change password scenario, also hide new password and repeat new password fields
 					if (CPUS_CHANGE_PASSWORD == m_usageScenario) {
 						m_fields->fields[CredProv::CPUIFI_NEW_PASSWORD].fieldStatePair.fieldState = CPFS_HIDDEN;
 						m_fields->fields[CredProv::CPUIFI_CONFIRM_NEW_PASSWORD].fieldStatePair.fieldState = CPFS_HIDDEN;
 						if (m_logonUiCallback) {
-							m_logonUiCallback->SetFieldState(this, CredProv::CPUIFI_NEW_PASSWORD, CPFS_HIDDEN);
-							m_logonUiCallback->SetFieldState(this, CredProv::CPUIFI_CONFIRM_NEW_PASSWORD, CPFS_HIDDEN);
+							m_logonUiCallback->SetFieldState(AsCred(), CredProv::CPUIFI_NEW_PASSWORD, CPFS_HIDDEN);
+							m_logonUiCallback->SetFieldState(AsCred(), CredProv::CPUIFI_CONFIRM_NEW_PASSWORD, CPFS_HIDDEN);
 						}
 					}
 				}

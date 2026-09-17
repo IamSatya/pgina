@@ -84,6 +84,7 @@ namespace pGina
 			virtual void	ServiceStateChanged(bool newState);
 
 		private:
+			ICredentialProviderCredential* AsCred() { return static_cast<ICredentialProviderCredential2*>(this); }
 			void	ClearZeroAndFreeAnyPasswordFields(bool updateUi);
 			void	ClearZeroAndFreeAnyTextFields(bool updateUi);
 			void	ClearZeroAndFreeFields(CREDENTIAL_PROVIDER_FIELD_TYPE type, bool updateUi);
