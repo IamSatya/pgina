@@ -37,10 +37,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; Core application files
-Source: "..\pGina\src\bin\pGina.Configuration.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\pGina\src\bin\pGina.Service.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\pGina\src\bin\pGina.InstallUtil.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\pGina\src\bin\pGina.CredentialProviderRegistration.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\pGina\src\bin\*.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\pGina\src\bin\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\pGina\src\bin\*.config"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\pGina\src\bin\log4net.xml"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
