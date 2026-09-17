@@ -152,7 +152,6 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -174,7 +173,6 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ControlFlowGuard>Guard</ControlFlowGuard>
       <BufferSecurityCheck>true</BufferSecurityCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
