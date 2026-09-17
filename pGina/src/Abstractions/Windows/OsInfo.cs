@@ -1,4 +1,4 @@
-﻿/*
+/*
 	Copyright (c) 2011, pGina Team
 	All rights reserved.
 
@@ -29,6 +29,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Win32;
 
 namespace Abstractions.Windows
 {
@@ -37,10 +38,58 @@ namespace Abstractions.Windows
         public static bool IsVistaOrLater()
         {
             OperatingSystem sys = System.Environment.OSVersion;
+            return sys.Platform == PlatformID.Win32NT && sys.Version.Major >= 6;
+        }
 
-            if (sys.Platform == PlatformID.Win32NT &&
-                sys.Version.Major >= 6)
+        public static bool IsWindows10OrLater()
+        {
+            if (!IsWindows()) return false;
+            OperatingSystem sys = System.Environment.OSVersion;
+            if (sys.Platform == PlatformID.Win32NT && sys.Version.Major >= 10)
                 return true;
+
+            // Fallback to registry check in case of OS compatibility shims
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
+                {
+                    if (key != null)
+                    {
+                        object majorVal = key.GetValue("CurrentMajorVersionNumber");
+                        if (majorVal is int major && major >= 10)
+                            return true;
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore registry read errors
+            }
+
+            return false;
+        }
+
+        public static bool IsWindows11OrLater()
+        {
+            if (!IsWindows10OrLater()) return false;
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
+                {
+                    if (key != null)
+                    {
+                        object buildVal = key.GetValue("CurrentBuildNumber");
+                        if (buildVal != null && int.TryParse(buildVal.ToString(), out int buildNumber))
+                        {
+                            return buildNumber >= 22000;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore registry read errors
+            }
 
             return false;
         }
@@ -48,26 +97,40 @@ namespace Abstractions.Windows
         public static bool IsWindows()
         {
             OperatingSystem sys = System.Environment.OSVersion;
-
-            if (sys.Platform == PlatformID.Win32NT ||
-                sys.Platform == PlatformID.Win32S ||
-                sys.Platform == PlatformID.Win32Windows ||
-                sys.Platform == PlatformID.WinCE)
-                return true;
-
-            return false;
+            return sys.Platform == PlatformID.Win32NT;
         }
 
         public static bool Is64Bit()
         {
-            // Is this equivalent?:  return Environment.Is64BitOperatingSystem;
-            return IntPtr.Size == 8;
+            return Environment.Is64BitOperatingSystem;
         }
 
         public static string OsDescription()
         {
-            return string.Format("OS: {0} Runtime: {1} Culture: {2}", System.Environment.OSVersion.VersionString, System.Environment.Version, CultureInfo.InstalledUICulture.EnglishName);
+            string osName = System.Environment.OSVersion.VersionString;
+            try
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
+                {
+                    if (key != null)
+                    {
+                        string prodName = key.GetValue("ProductName") as string;
+                        string displayVersion = key.GetValue("DisplayVersion") as string;
+                        string build = key.GetValue("CurrentBuildNumber") as string;
+                        if (!string.IsNullOrEmpty(prodName))
+                        {
+                            osName = $"{prodName} (Version: {displayVersion ?? "N/A"}, Build: {build ?? "N/A"})";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // Fallback to VersionString
+            }
 
+            return string.Format("OS: {0} (64-bit: {1}) Runtime: {2} Culture: {3}",
+                osName, Is64Bit(), System.Environment.Version, CultureInfo.InstalledUICulture.EnglishName);
         }
     }
 }

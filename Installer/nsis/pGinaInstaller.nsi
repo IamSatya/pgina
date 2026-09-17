@@ -70,8 +70,7 @@ FunctionEnd
 #############################################
 
 Section -Prerequisites
-  # Check for and install .NET 4
-  !insertmacro CheckNetFramework 40Full
+  # .NET Framework 4.8 is built into modern Windows 10 (1903+) and Windows 11
 SectionEnd
 
 Section "pGina" InstallpGina 
@@ -83,17 +82,10 @@ Section "pGina" InstallpGina
   File "..\..\pGina\src\bin\log4net.xml"
   File "..\..\pGina\src\bin\*.config"
 
-  ${If} ${AtLeastWin7}
-    SetOutPath $INSTDIR\Win32
-    File "..\..\pGina\src\bin\Win32\pGinaCredentialProvider.dll"
-    SetOutPath $INSTDIR\x64
-    File "..\..\pGina\src\bin\x64\pGinaCredentialProvider.dll"
-  ${Else}
-    SetOutPath $INSTDIR\Win32
-    File "..\..\pGina\src\bin\Win32\pGinaGINA.dll"
-    SetOutPath $INSTDIR\x64
-    File "..\..\pGina\src\bin\x64\pGinaGINA.dll"
-  ${EndIf}
+  SetOutPath $INSTDIR\Win32
+  File "..\..\pGina\src\bin\Win32\pGinaCredentialProvider.dll"
+  SetOutPath $INSTDIR\x64
+  File "..\..\pGina\src\bin\x64\pGinaCredentialProvider.dll"
 
    WriteUninstaller "$INSTDIR\pGina-Uninstall.exe"
 SectionEnd

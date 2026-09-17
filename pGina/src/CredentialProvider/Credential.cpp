@@ -25,6 +25,8 @@
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <Windows.h>
+#include <sddl.h>
+#include <wtsapi32.h>
 
 #include "Credential.h"
 #include "Dll.h"
@@ -56,13 +58,15 @@ namespace pGina
 		{
 			static const QITAB qitBaseOnly[] =
 			{
-				QITABENT(Credential, ICredentialProviderCredential),				
+				QITABENT(Credential, ICredentialProviderCredential2),
+				QITABENTMULTI(Credential, ICredentialProviderCredential, ICredentialProviderCredential2),				
 				{0},
 			};
 
 			static const QITAB qitFull[] =
 			{
-				QITABENT(Credential, ICredentialProviderCredential),
+				QITABENT(Credential, ICredentialProviderCredential2),
+				QITABENTMULTI(Credential, ICredentialProviderCredential, ICredentialProviderCredential2),
 				QITABENT(Credential, IConnectableCredentialProviderCredential), 
 				{0},
 			};
@@ -739,6 +743,50 @@ namespace pGina
 
 		IFACEMETHODIMP Credential::Disconnect()
 		{
+			return E_NOTIMPL;
+		}
+
+		IFACEMETHODIMP Credential::GetUserSid(__deref_out PWSTR* ppwszSid)
+		{
+			pDEBUG(L"Credential::GetUserSid enter");
+			if (!ppwszSid) return E_INVALIDARG;
+			*ppwszSid = NULL;
+
+			// In unlock workstation scenario, resolve the SID of the current session user
+			if (m_usageScenario == CPUS_UNLOCK_WORKSTATION)
+			{
+				DWORD sessionId = pGina::Helpers::GetCurrentSessionId();
+				HANDLE hToken = NULL;
+				if (WTSQueryUserToken(sessionId, &hToken))
+				{
+					DWORD len = 0;
+					GetTokenInformation(hToken, TokenUser, NULL, 0, &len);
+					if (GetLastError() == ERROR_INSUFFICIENT_BUFFER && len > 0)
+					{
+						PTOKEN_USER pTokenUser = (PTOKEN_USER)LocalAlloc(LMEM_FIXED, len);
+						if (pTokenUser)
+						{
+							if (GetTokenInformation(hToken, TokenUser, pTokenUser, len, &len))
+							{
+								LPWSTR stringSid = NULL;
+								if (ConvertSidToStringSidW(pTokenUser->User.Sid, &stringSid))
+								{
+									HRESULT hr = SHStrDupW(stringSid, ppwszSid);
+									LocalFree(stringSid);
+									LocalFree(pTokenUser);
+									CloseHandle(hToken);
+									pDEBUG(L"Credential::GetUserSid: resolved unlock SID %s", *ppwszSid ? *ppwszSid : L"NULL");
+									return hr;
+								}
+							}
+							LocalFree(pTokenUser);
+						}
+					}
+					CloseHandle(hToken);
+				}
+			}
+
+			// For generic logon tiles / other user tiles, return E_NOTIMPL per MSDN specification
 			return E_NOTIMPL;
 		}
 

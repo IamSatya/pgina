@@ -1,4 +1,4 @@
-﻿/*
+/*
 	Copyright (c) 2011, pGina Team
 	All rights reserved.
 
@@ -54,6 +54,17 @@ namespace pGina.Shared.Logging
             {
                 log4net.GlobalContext.Properties["pid"] = me.Id;
                 log4net.GlobalContext.Properties["AppName"] = me.ProcessName;
+            }
+
+            try
+            {
+                System.Net.ServicePointManager.SecurityProtocol |=
+                    System.Net.SecurityProtocolType.Tls12 |
+                    (System.Net.SecurityProtocolType)12288;
+            }
+            catch
+            {
+                // Fallback gracefully on older OS/runtimes
             }
 
             XmlConfigurator.ConfigureAndWatch(new FileInfo(l4nConfig));

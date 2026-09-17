@@ -55,6 +55,7 @@ namespace pGina
 			static const QITAB qit[] =
 			{
 				QITABENT(Provider, ICredentialProvider), 
+				QITABENT(Provider, ICredentialProviderSetUserArray), 
 				{0},
 			};
 			return QISearch(this, qit, riid, ppv);
@@ -80,7 +81,8 @@ namespace pGina
 			m_logonUiCallbackContext(0),
 			m_credential(NULL),
 			m_usageFlags(0),
-			m_setSerialization(NULL)
+			m_setSerialization(NULL),
+			m_userArray(NULL)
 		{		
 			AddDllReference();
 
@@ -109,6 +111,30 @@ namespace pGina
 				LocalFree(m_setSerialization);
 				m_setSerialization = NULL;
 			}
+
+			if(m_userArray)
+			{
+				m_userArray->Release();
+				m_userArray = NULL;
+			}
+		}
+
+		IFACEMETHODIMP Provider::SetUserArray(__in_opt ICredentialProviderUserArray *users)
+		{
+			pDEBUG(L"Provider::SetUserArray(%p)", users);
+			if(m_userArray)
+			{
+				m_userArray->Release();
+				m_userArray = NULL;
+			}
+
+			if(users)
+			{
+				m_userArray = users;
+				m_userArray->AddRef();
+			}
+
+			return S_OK;
 		}
 
 		// Poorly named, should be QueryUsageScenarioSupport - LogonUI calls this to find out whether the provided

@@ -38,7 +38,8 @@ namespace pGina
 {
 	namespace CredProv
 	{
-		class Credential : public IConnectableCredentialProviderCredential
+		class Credential : public ICredentialProviderCredential2,
+		                   public IConnectableCredentialProviderCredential
 		{
 		public:
 			// IUnknown
@@ -67,6 +68,9 @@ namespace pGina
 			IFACEMETHODIMP ReportResult(__in NTSTATUS ntsStatus, __in NTSTATUS ntsSubstatus, __deref_out_opt PWSTR* ppwszOptionalStatusText, 
 										__out CREDENTIAL_PROVIDER_STATUS_ICON* pcpsiOptionalStatusIcon);
 			
+			// ICredentialProviderCredential2
+			IFACEMETHODIMP GetUserSid(__deref_out PWSTR* ppwszSid);
+
 			// IConnectableCredentialProviderCredential
 			IFACEMETHODIMP Connect( __in IQueryContinueWithStatus *pqcws );
 			IFACEMETHODIMP Disconnect();

@@ -39,7 +39,8 @@ namespace pGina
 {
 	namespace CredProv
 	{
-		class Provider : public ICredentialProvider
+		class Provider : public ICredentialProvider,
+		                 public ICredentialProviderSetUserArray
 		{
 		public:
 			// IUnknown
@@ -56,6 +57,9 @@ namespace pGina
 			IFACEMETHODIMP GetFieldDescriptorAt(__in DWORD dwIndex,  __deref_out CREDENTIAL_PROVIDER_FIELD_DESCRIPTOR** ppcpfd);
 			IFACEMETHODIMP GetCredentialCount(__out DWORD* pdwCount, __out_range(<,*pdwCount) DWORD* pdwDefault, __out BOOL* pbAutoLogonWithDefault);
 			IFACEMETHODIMP GetCredentialAt(__in DWORD dwIndex, __deref_out ICredentialProviderCredential** ppcpc);
+
+			// ICredentialProviderSetUserArray
+			IFACEMETHODIMP SetUserArray(__in_opt ICredentialProviderUserArray *users);
 
 			friend class pGina::COM::CClassFactory;
 
@@ -77,7 +81,8 @@ namespace pGina
 			UINT_PTR							m_logonUiCallbackContext;
 			Credential *						m_credential;
 			DWORD								m_usageFlags;
-			KERB_INTERACTIVE_UNLOCK_LOGON *		m_setSerialization;			
+			KERB_INTERACTIVE_UNLOCK_LOGON *		m_setSerialization;
+			ICredentialProviderUserArray *		m_userArray;
 		};
 	}
 }

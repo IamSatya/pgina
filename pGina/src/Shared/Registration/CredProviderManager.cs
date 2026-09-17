@@ -1,4 +1,4 @@
-﻿/*
+/*
 	Copyright (c) 2012, pGina Team
 	All rights reserved.
 
@@ -50,10 +50,7 @@ namespace pGina.CredentialProvider.Registration
         {
             if (Abstractions.Windows.OsInfo.IsWindows())
             {
-                if (Abstractions.Windows.OsInfo.IsVistaOrLater())
-                    return new DefaultCredProviderManager();
-                else
-                    return new GinaCredProviderManager();
+                return new DefaultCredProviderManager();
             }
             else
             {
@@ -89,108 +86,6 @@ namespace pGina.CredentialProvider.Registration
         public abstract bool Registered6432();
         public abstract bool Enabled();
         public abstract bool Enabled6432();
-    }
-
-    public class GinaCredProviderManager : CredProviderManager
-    {
-
-        private static readonly string GINA_KEY = @"Software\Microsoft\Windows NT\CurrentVersion\Winlogon";
-        private ILog m_logger = LogManager.GetLogger("GinaCredProviderManager");
-
-        public GinaCredProviderManager()
-        {
-            this.CpInfo.ShortName = "pGinaGINA";
-        }
-
-        public override void Install()
-        {
-            FileInfo dll = null;
-
-            if (Abstractions.Windows.OsInfo.Is64Bit())
-            {
-                dll = DllUtils.Find64BitDll(this.CpInfo.Path, this.CpInfo.ShortName);
-            }
-            else
-            {
-                dll = DllUtils.Find32BitDll(this.CpInfo.Path, this.CpInfo.ShortName);
-            }
-            if (dll != null)
-            {
-                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(GINA_KEY, true))
-                {
-                    if (key != null)
-                    {
-                        m_logger.DebugFormat("{0} {1} => {2}", key.ToString(), "GinaDLL",
-                            dll.FullName);
-                        key.SetValue("GinaDLL", dll.FullName);
-                        key.SetValue("NoDomainUI", 1);
-                        key.SetValue("DontDisplayLastUserName", 1);
-                    }
-                }
-            }
-            else
-            {
-                throw new Exception("GINA DLL not found in " + CpInfo.Path);
-            }
-        }
-
-        public override void Uninstall()
-        {
-            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(GINA_KEY, true))
-            {
-                if (key != null)
-                {
-                    m_logger.DebugFormat("Deleting GinaDLL value in {0}", key.ToString());
-                    key.DeleteValue("GinaDLL", false);
-                    key.DeleteValue("NoDomainUI", false);
-                }
-            }
-        }
-
-        public override void Disable()
-        {
-            dynamic pGinaSettings = new pGinaDynamicSettings();
-            pGinaSettings.GinaPassthru = true;
-        }
-
-        public override void Enable()
-        {
-            dynamic pGinaSettings = new pGinaDynamicSettings();
-            pGinaSettings.GinaPassthru = false;
-        }
-
-        public override bool Registered()
-        {
-            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(GINA_KEY))
-            {
-                if (key != null)
-                {
-                    object value = key.GetValue("GinaDLL");
-                    return value != null;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public override bool Registered6432()
-        {
-            return true;
-        }
-
-        public override bool Enabled()
-        {
-            dynamic pGinaSettings = new pGinaDynamicSettings();
-            bool passthru = pGinaSettings.GetSetting("GinaPassthru", false);
-            return !passthru;
-        }
-
-        public override bool Enabled6432()
-        {
-            return true;
-        }        
     }
 
     public class DefaultCredProviderManager : CredProviderManager
